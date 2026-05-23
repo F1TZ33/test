@@ -41,7 +41,7 @@ body{
 .topbar{
     display:flex;
     gap:12px;
-    margin-bottom:24px;
+    margin-bottom:18px;
     flex-wrap:wrap;
 }
 
@@ -71,6 +71,12 @@ button:hover{
     background:#1b1b1b;
 }
 
+.status{
+    color:#aaa;
+    font-size:13px;
+    margin-bottom:20px;
+}
+
 .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
@@ -98,7 +104,7 @@ button:hover{
 .tile p{
     color:#aaa;
     font-size:14px;
-    min-height:40px;
+    min-height:38px;
 }
 
 .tile a{
@@ -114,6 +120,14 @@ button:hover{
 
 .tile a:hover{
     background:#c40000;
+}
+
+.empty{
+    border:1px dashed #555;
+    border-radius:14px;
+    padding:22px;
+    color:#aaa;
+    background:#181818;
 }
 
 .footer{
@@ -141,13 +155,15 @@ button:hover{
 
     <section class="hero">
         <h1>Module Launcher</h1>
-        <p>Dynamic launcher for BW Playbook modules and tools.</p>
+        <p>Live launcher for HTML files currently present in this GitHub source folder.</p>
     </section>
 
     <div class="topbar">
         <input type="text" id="search" placeholder="Search modules...">
-        <button onclick="loadModules()">Refresh Directory</button>
+        <button onclick="loadDirectory()">Refresh Directory</button>
     </div>
+
+    <div class="status" id="status">Loading directory...</div>
 
     <div class="grid" id="moduleGrid"></div>
 
@@ -158,52 +174,136 @@ button:hover{
 </div>
 
 <script>
-
 let modules = [];
 
-async function loadModules() {
+/*
+  IMPORTANT:
+  Static GitHub Pages cannot read a folder directly from the browser file system.
+  This page uses the public GitHub API to list files in the current repo folder.
 
-    const response = await fetch('manifest.json?t=' + new Date().getTime());
-    modules = await response.json();
+  Works best when hosted from GitHub Pages:
+  https://username.github.io/repository-name/folder/index.html
+*/
 
-    renderModules(modules);
+function titleFromFile(filename){
+    return filename
+        .replace(/\.html$/i, "")
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function getRepoInfoFromUrl(){
+    const hostParts = window.location.hostname.split(".");
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+
+    if (!window.location.hostname.includes("github.io") || pathParts.length === 0) {
+        return null;
+    }
+
+    const owner = hostParts[0];
+    const repo = pathParts[0];
+
+    let sourcePathParts = pathParts.slice(1);
+
+    if (sourcePathParts.length && sourcePathParts[sourcePathParts.length - 1].toLowerCase().endsWith(".html")) {
+        sourcePathParts.pop();
+    }
+
+    const sourcePath = sourcePathParts.join("/");
+
+    return { owner, repo, sourcePath };
+}
+
+async function loadDirectory(){
+    const status = document.getElementById("status");
+    const grid = document.getElementById("moduleGrid");
+
+    status.textContent = "Refreshing directory...";
+    grid.innerHTML = "";
+
+    const repoInfo = getRepoInfoFromUrl();
+
+    if (!repoInfo) {
+        status.textContent = "Live directory detection works when this file is hosted on GitHub Pages. For local testing, upload to the repo first.";
+        modules = [];
+        renderModules(modules);
+        return;
+    }
+
+    const apiUrl = `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/contents/${repoInfo.sourcePath}?t=${Date.now()}`;
+
+    try {
+        const response = await fetch(apiUrl, { cache: "no-store" });
+
+        if (!response.ok) {
+            throw new Error("GitHub API request failed.");
+        }
+
+        const contents = await response.json();
+
+        modules = contents
+            .filter(item =>
+                item.type === "file" &&
+                item.name.toLowerCase().endsWith(".html") &&
+                item.name.toLowerCase() !== "index.html"
+            )
+            .map(item => ({
+                title: titleFromFile(item.name),
+                file: item.name,
+                description: "HTML module detected in source folder."
+            }))
+            .sort((a, b) => a.title.localeCompare(b.title));
+
+        status.textContent = `${modules.length} module(s) detected in this source folder.`;
+        renderModules(modules);
+
+    } catch (error) {
+        console.error(error);
+        status.textContent = "Could not load live directory. Check that the repo is public or use a generated manifest for private repos.";
+        modules = [];
+        renderModules(modules);
+    }
 }
 
 function renderModules(list){
+    const grid = document.getElementById("moduleGrid");
+    grid.innerHTML = "";
 
-    const grid = document.getElementById('moduleGrid');
-    grid.innerHTML = '';
+    if (!list.length) {
+        grid.innerHTML = `
+            <div class="empty">
+                No HTML modules detected yet.
+            </div>
+        `;
+        return;
+    }
 
     list.forEach(module => {
-
-        const tile = document.createElement('div');
-        tile.className = 'tile';
+        const tile = document.createElement("div");
+        tile.className = "tile";
 
         tile.innerHTML = `
             <h3>${module.title}</h3>
-            <p>${module.description || 'No description provided.'}</p>
+            <p>${module.description}</p>
             <a href="${module.file}">Open Module</a>
         `;
 
         grid.appendChild(tile);
-
     });
 }
 
-document.getElementById('search').addEventListener('input', function(){
-
+document.getElementById("search").addEventListener("input", function(){
     const term = this.value.toLowerCase();
 
     const filtered = modules.filter(module =>
-        module.title.toLowerCase().includes(term)
+        module.title.toLowerCase().includes(term) ||
+        module.file.toLowerCase().includes(term)
     );
 
     renderModules(filtered);
-
 });
 
-loadModules();
-
+loadDirectory();
 </script>
 
 </body>
