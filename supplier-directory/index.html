@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supplier Directory Search</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell compact-shell">
+    <section class="panel search-panel">
+      <div class="compact-title">
+        <h2>Supplier Directory</h2>
+        <p>Search from any point in supplier, brand, category, product, account, state, phone, email, or notes.</p>
+      </div>
+
+      <div class="search-grid compact-grid">
+        <div class="search-wrap quick-search">
+          <label for="q">Quick supplier / brand / product search</label>
+          <input id="q" type="search" placeholder="enter text starting from any point" autocomplete="off" />
+        </div>
+        <div class="search-wrap">
+          <label for="categoryFilter">Category</label>
+          <select id="categoryFilter"><option value="">All categories</option></select>
+        </div>
+        <div class="search-wrap">
+          <label for="brandFilter">Brand</label>
+          <select id="brandFilter"><option value="">All brands</option></select>
+        </div>
+        <div class="search-wrap">
+          <label for="stateFilter">State</label>
+          <select id="stateFilter"><option value="">All states</option></select>
+        </div>
+        <label class="preferred-toggle"><input id="preferredOnly" type="checkbox" /> Preferred only</label>
+      </div>
+
+      <div class="control-row compact-actions">
+        <button id="clearBtn" type="button">Clear search</button>
+        <span id="stats" class="stats-inline"></span>
+      </div>
+      <div id="results"></div>
+    </section>
+  </main>
+  <footer>Designed and built by H. Fitzgerald</footer>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

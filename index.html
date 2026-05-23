@@ -122,6 +122,16 @@ button:hover{
     background:#c40000;
 }
 
+.badge{
+    display:inline-block;
+    margin-bottom:10px;
+    padding:4px 8px;
+    border-radius:999px;
+    border:1px solid #444;
+    color:#bbb;
+    font-size:12px;
+}
+
 .empty{
     border:1px dashed #555;
     border-radius:14px;
@@ -155,7 +165,7 @@ button:hover{
 
     <section class="hero">
         <h1>Module Launcher</h1>
-        <p>Live launcher for HTML files currently present in this GitHub source folder.</p>
+        <p>Live launcher for simple HTML pages and folder-based modules currently present in this source folder.</p>
     </section>
 
     <div class="topbar">
@@ -176,31 +186,32 @@ button:hover{
 <script>
 let modules = [];
 
-/*
-  IMPORTANT:
-  Static GitHub Pages cannot read a folder directly from the browser file system.
-  This page uses the public GitHub API to list files in the current repo folder.
+const friendlyNames = {
+    "auto-x-ref": {
+        title: "Auto X-Ref",
+        description: "Dimensional and part number cross-reference search."
+    },
+    "supplier-directory": {
+        title: "Supplier Directory",
+        description: "Supplier, brand, product, category and state search."
+    }
+};
 
-  Works best when hosted from GitHub Pages:
-  https://username.github.io/repository-name/folder/index.html
-*/
-
-function titleFromFile(filename){
-    return filename
+function titleFromName(name){
+    return name
         .replace(/\.html$/i, "")
         .replace(/[-_]+/g, " ")
         .replace(/\b\w/g, char => char.toUpperCase());
 }
 
 function getRepoInfoFromUrl(){
-    const hostParts = window.location.hostname.split(".");
     const pathParts = window.location.pathname.split("/").filter(Boolean);
 
     if (!window.location.hostname.includes("github.io") || pathParts.length === 0) {
         return null;
     }
 
-    const owner = hostParts[0];
+    const owner = window.location.hostname.split(".")[0];
     const repo = pathParts[0];
 
     let sourcePathParts = pathParts.slice(1);
@@ -214,6 +225,16 @@ function getRepoInfoFromUrl(){
     return { owner, repo, sourcePath };
 }
 
+async function folderHasIndex(owner, repo, folderPath){
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}/index.html?t=${Date.now()}`;
+    try{
+        const response = await fetch(apiUrl, { cache: "no-store" });
+        return response.ok;
+    }catch(error){
+        return false;
+    }
+}
+
 async function loadDirectory(){
     const status = document.getElementById("status");
     const grid = document.getElementById("moduleGrid");
@@ -224,8 +245,8 @@ async function loadDirectory(){
     const repoInfo = getRepoInfoFromUrl();
 
     if (!repoInfo) {
-        status.textContent = "Live directory detection works when this file is hosted on GitHub Pages. For local testing, upload to the repo first.";
-        modules = [];
+        status.textContent = "Live detection works from GitHub Pages. For local testing, open the folder after uploading to the repo.";
+        modules = getLocalFallbackModules();
         renderModules(modules);
         return;
     }
@@ -241,28 +262,64 @@ async function loadDirectory(){
 
         const contents = await response.json();
 
-        modules = contents
+        const htmlFiles = contents
             .filter(item =>
                 item.type === "file" &&
                 item.name.toLowerCase().endsWith(".html") &&
                 item.name.toLowerCase() !== "index.html"
             )
             .map(item => ({
-                title: titleFromFile(item.name),
+                title: titleFromName(item.name),
                 file: item.name,
-                description: "HTML module detected in source folder."
-            }))
-            .sort((a, b) => a.title.localeCompare(b.title));
+                description: "Simple HTML page detected in source folder.",
+                type: "HTML Page"
+            }));
+
+        const folders = [];
+
+        for (const item of contents.filter(item => item.type === "dir")) {
+            const folderPath = repoInfo.sourcePath ? `${repoInfo.sourcePath}/${item.name}` : item.name;
+            const hasIndex = await folderHasIndex(repoInfo.owner, repoInfo.repo, folderPath);
+
+            if (hasIndex) {
+                const friendly = friendlyNames[item.name] || {};
+                folders.push({
+                    title: friendly.title || titleFromName(item.name),
+                    file: `${item.name}/`,
+                    description: friendly.description || "Folder-based module detected with its own index.html.",
+                    type: "Folder Module"
+                });
+            }
+        }
+
+        modules = [...folders, ...htmlFiles].sort((a, b) => a.title.localeCompare(b.title));
 
         status.textContent = `${modules.length} module(s) detected in this source folder.`;
         renderModules(modules);
 
     } catch (error) {
         console.error(error);
-        status.textContent = "Could not load live directory. Check that the repo is public or use a generated manifest for private repos.";
-        modules = [];
+        status.textContent = "Could not load live directory. Check that the repo is public, or use a manifest/GitHub Action for private repos.";
+        modules = getLocalFallbackModules();
         renderModules(modules);
     }
+}
+
+function getLocalFallbackModules(){
+    return [
+        {
+            title: "Auto X-Ref",
+            file: "auto-x-ref/",
+            description: "Folder-based test module.",
+            type: "Folder Module"
+        },
+        {
+            title: "Supplier Directory",
+            file: "supplier-directory/",
+            description: "Folder-based test module.",
+            type: "Folder Module"
+        }
+    ];
 }
 
 function renderModules(list){
@@ -270,11 +327,7 @@ function renderModules(list){
     grid.innerHTML = "";
 
     if (!list.length) {
-        grid.innerHTML = `
-            <div class="empty">
-                No HTML modules detected yet.
-            </div>
-        `;
+        grid.innerHTML = `<div class="empty">No HTML pages or folder modules detected yet.</div>`;
         return;
     }
 
@@ -283,6 +336,7 @@ function renderModules(list){
         tile.className = "tile";
 
         tile.innerHTML = `
+            <span class="badge">${module.type}</span>
             <h3>${module.title}</h3>
             <p>${module.description}</p>
             <a href="${module.file}">Open Module</a>
@@ -297,7 +351,8 @@ document.getElementById("search").addEventListener("input", function(){
 
     const filtered = modules.filter(module =>
         module.title.toLowerCase().includes(term) ||
-        module.file.toLowerCase().includes(term)
+        module.file.toLowerCase().includes(term) ||
+        module.description.toLowerCase().includes(term)
     );
 
     renderModules(filtered);
