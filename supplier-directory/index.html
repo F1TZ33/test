@@ -38,6 +38,138 @@
         <button id="clearBtn" type="button">Clear search</button>
         <span id="stats" class="stats-inline"></span>
       </div>
+      <details class="add-panel" open>
+        <summary>Add supplier / product</summary>
+
+        <div class="add-mode-row">
+          <button id="modeSupplierBtn" type="button" class="mode-btn active">Add by Supplier</button>
+          <button id="modeProductBtn" type="button" class="mode-btn">Add by Product</button>
+        </div>
+
+        <section id="supplierFlow" class="guided-add-flow">
+          <div class="flow-step">
+            <span class="step-pill">1</span>
+            <div>
+              <h3>Choose or create supplier</h3>
+              <p>Start typing. Existing suppliers appear below so you can select one instead of doubling up.</p>
+            </div>
+          </div>
+
+          <div class="add-grid two-col">
+            <div class="search-wrap wide">
+              <label for="supplierSearchAdd">Supplier</label>
+              <input id="supplierSearchAdd" type="text" placeholder="Start typing supplier name..." autocomplete="off" />
+              <div id="supplierMatches" class="live-match-list"></div>
+            </div>
+            <div class="selected-box">
+              <b>Selected supplier</b>
+              <span id="selectedSupplierText">None selected yet</span>
+            </div>
+          </div>
+
+          <div id="newSupplierFields" class="add-grid">
+            <div class="search-wrap"><label for="newAccount">Account</label><input id="newAccount" type="text" placeholder="Optional" /></div>
+            <div class="search-wrap"><label for="newState">State/s</label><input id="newState" type="text" placeholder="VIC, NSW, QLD" /></div>
+            <div class="search-wrap"><label for="newPhone">Phone</label><input id="newPhone" type="text" placeholder="Optional" /></div>
+            <div class="search-wrap"><label for="newEmail">Email</label><input id="newEmail" type="email" placeholder="Optional" /></div>
+            <div class="search-wrap wide"><label for="newCategory">Categories</label><input id="newCategory" type="text" placeholder="Bearings, Seals, Power Transmission" /></div>
+            <div class="search-wrap wide"><label for="newBrands">Brands</label><input id="newBrands" type="text" placeholder="NSK, NTN, SKF" /></div>
+            <div class="search-wrap wide"><label for="newNotes">Notes</label><input id="newNotes" type="text" placeholder="Login note, branch note, contact note etc." /></div>
+            <label class="preferred-toggle add-pref"><input id="newPreferred" type="checkbox" /> Preferred supplier</label>
+          </div>
+
+          <div class="flow-step second-step">
+            <span class="step-pill">2</span>
+            <div>
+              <h3>Add product to supplier</h3>
+              <p>Start typing the product. Similar existing products appear below, including word-order matches like conveyor chain / chain conveyor.</p>
+            </div>
+          </div>
+
+          <div class="add-grid two-col">
+            <div class="search-wrap wide">
+              <label for="productSearchForSupplier">Product</label>
+              <input id="productSearchForSupplier" type="text" placeholder="Start typing product..." autocomplete="off" />
+              <div id="productMatchesForSupplier" class="live-match-list"></div>
+            </div>
+            <div class="selected-box">
+              <b>Selected product</b>
+              <span id="selectedProductForSupplierText">None selected yet</span>
+            </div>
+          </div>
+
+          <div class="control-row compact-actions">
+            <button id="saveSupplierProductBtn" type="button">Save supplier/product link</button>
+            <span id="supplierFlowStatus" class="stats-inline"></span>
+          </div>
+        </section>
+
+        <section id="productFlow" class="guided-add-flow hidden">
+          <div class="flow-step">
+            <span class="step-pill">1</span>
+            <div>
+              <h3>Choose or create product</h3>
+              <p>Start typing. Existing products appear below so you can select one instead of doubling up.</p>
+            </div>
+          </div>
+
+          <div class="add-grid two-col">
+            <div class="search-wrap wide">
+              <label for="productSearchAdd">Product</label>
+              <input id="productSearchAdd" type="text" placeholder="Start typing product..." autocomplete="off" />
+              <div id="productMatches" class="live-match-list"></div>
+            </div>
+            <div class="selected-box">
+              <b>Selected product</b>
+              <span id="selectedProductText">None selected yet</span>
+            </div>
+          </div>
+
+          <div class="flow-step second-step">
+            <span class="step-pill">2</span>
+            <div>
+              <h3>Add supplier to product</h3>
+              <p>Start typing the supplier. Existing suppliers appear below, or create a new supplier if no match exists.</p>
+            </div>
+          </div>
+
+          <div class="add-grid two-col">
+            <div class="search-wrap wide">
+              <label for="supplierSearchForProduct">Supplier</label>
+              <input id="supplierSearchForProduct" type="text" placeholder="Start typing supplier name..." autocomplete="off" />
+              <div id="supplierMatchesForProduct" class="live-match-list"></div>
+            </div>
+            <div class="selected-box">
+              <b>Selected supplier</b>
+              <span id="selectedSupplierForProductText">None selected yet</span>
+            </div>
+          </div>
+
+          <div id="newSupplierFieldsProductFlow" class="add-grid">
+            <div class="search-wrap"><label for="pfNewAccount">Account</label><input id="pfNewAccount" type="text" placeholder="Optional" /></div>
+            <div class="search-wrap"><label for="pfNewState">State/s</label><input id="pfNewState" type="text" placeholder="VIC, NSW, QLD" /></div>
+            <div class="search-wrap"><label for="pfNewPhone">Phone</label><input id="pfNewPhone" type="text" placeholder="Optional" /></div>
+            <div class="search-wrap"><label for="pfNewEmail">Email</label><input id="pfNewEmail" type="email" placeholder="Optional" /></div>
+            <div class="search-wrap wide"><label for="pfNewCategory">Categories</label><input id="pfNewCategory" type="text" placeholder="Bearings, Seals, Power Transmission" /></div>
+            <div class="search-wrap wide"><label for="pfNewBrands">Brands</label><input id="pfNewBrands" type="text" placeholder="NSK, NTN, SKF" /></div>
+            <div class="search-wrap wide"><label for="pfNewNotes">Notes</label><input id="pfNewNotes" type="text" placeholder="Login note, branch note, contact note etc." /></div>
+            <label class="preferred-toggle add-pref"><input id="pfNewPreferred" type="checkbox" /> Preferred supplier</label>
+          </div>
+
+          <div class="control-row compact-actions">
+            <button id="saveProductSupplierBtn" type="button">Save product/supplier link</button>
+            <span id="productFlowStatus" class="stats-inline"></span>
+          </div>
+        </section>
+
+        <div class="control-row compact-actions add-admin-row">
+          <button id="exportAddedBtn" type="button">Export added entries</button>
+          <button id="clearAddedBtn" type="button">Clear added entries</button>
+          <span id="addStatus" class="stats-inline"></span>
+        </div>
+        <p class="add-note">Testing version: added/edited links are saved to this browser only. Export added entries before changing device or clearing browser data.</p>
+      </details>
+
       <div id="results"></div>
     </section>
   </main>
