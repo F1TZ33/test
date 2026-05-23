@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Timken SBHU Interchange</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <h1>Timken SBHU Interchange</h1>
+    <p>Live search for spherical roller bearing solid-block housed unit interchange. Type any competitor part number, Dodge part number, or Timken option.</p>
+  </header>
+
+  <section class="search-panel">
+    <div class="search-row">
+      <input id="searchInput" type="search" placeholder="Start typing: P2B-SC-100, QAP08A108ST, EP2B-IP-108L..." autocomplete="off" />
+      <select id="brandFilter">
+        <option value="">All brands</option>
+      </select>
+      <select id="styleFilter">
+        <option value="">All locking styles</option>
+      </select>
+      <button id="clearBtn" type="button">Clear</button>
+    </div>
+
+    <div class="meta-row">
+      <span id="status">Ready.</span>
+      <span class="hint">Backend table is stored in <strong>data.js</strong>; the full table is not displayed.</span>
+    </div>
+  </section>
+
+  <main id="results" class="results">
+    <div class="empty">Start typing a part number to see live interchange results.</div>
+  </main>
+
+  <footer class="footer">
+    Designed and built by H. Fitzgerald
+  </footer>
+
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
