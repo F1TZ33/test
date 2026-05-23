@@ -1,578 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Local Meal Planner</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module Launcher</title>
+
 <style>
-:root{
-  --bg:#071527;
-  --panel:#0f2238;
-  --panel2:#132b47;
-  --panel3:#0a192b;
-  --text:#ffffff;
-  --muted:#b9c7d6;
-  --accent:#e63946;
-  --accent2:#ff6b6b;
-  --good:#24c27a;
-  --warn:#f5b942;
-  --border:rgba(255,255,255,.14);
-}
-*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:linear-gradient(135deg,#06111f,#0b2138 55%,#071527);
-  color:var(--text);
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#111;
+    color:#fff;
 }
-header{
-  padding:18px 16px;
-  text-align:center;
-  background:rgba(0,0,0,.25);
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:10;
-  backdrop-filter:blur(8px);
+
+.page{
+    max-width:1400px;
+    margin:0 auto;
+    padding:24px;
 }
-header h1{margin:0;font-size:24px}
-header p{margin:6px 0 0;color:var(--muted);font-size:13px}
-main{max-width:1180px;margin:0 auto;padding:16px}
-section{
-  background:rgba(15,34,56,.96);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:16px;
-  margin:0 0 16px;
-  box-shadow:0 12px 28px rgba(0,0,0,.22);
+
+.hero{
+    background:#181818;
+    border:1px solid #c40000;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:24px;
+    box-shadow:0 0 12px rgba(196,0,0,0.35);
 }
-h2{margin:0 0 12px;font-size:20px}
-h3{margin:0 0 8px}
-label{display:block;color:var(--muted);font-size:14px;margin:10px 0 5px}
-input, textarea, select{
-  width:100%;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:#06111f;
-  color:#fff;
-  padding:11px;
-  font-size:15px;
+
+.hero h1{
+    margin:0 0 8px;
+    font-size:32px;
 }
-textarea{min-height:92px;resize:vertical}
+
+.hero p{
+    margin:0;
+    color:#bbb;
+}
+
+.topbar{
+    display:flex;
+    gap:12px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+}
+
+input{
+    flex:1;
+    min-width:240px;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #444;
+    background:#181818;
+    color:#fff;
+    font-size:15px;
+}
+
 button{
-  border:1px solid var(--accent);
-  background:rgba(230,57,70,.18);
-  color:#fff;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:700;
-  font-size:14px;
+    padding:12px 18px;
+    border-radius:10px;
+    border:1px solid #c40000;
+    background:#111;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 3px 0 #7a0000;
 }
-button:hover{background:rgba(230,57,70,.34)}
-button.secondary{border-color:var(--border);background:var(--panel2)}
-button.good{border-color:var(--good);background:rgba(36,194,122,.17)}
-button.warn{border-color:var(--warn);background:rgba(245,185,66,.14)}
-button.danger{border-color:var(--accent2);background:rgba(255,107,107,.15)}
-.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.card{
-  background:var(--panel2);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:12px;
-  margin-top:10px;
+
+button:hover{
+    background:#1b1b1b;
 }
-.meal-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.badge,.tag{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:999px;
-  background:rgba(255,255,255,.1);
-  color:#fff;
-  font-size:12px;
-  margin:3px 4px 3px 0;
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:18px;
 }
-.badge.good{background:rgba(36,194,122,.2);border:1px solid rgba(36,194,122,.3)}
-.badge.off{background:rgba(255,255,255,.08);color:var(--muted)}
-.small{font-size:13px;color:var(--muted)}
-.hr{height:1px;background:var(--border);margin:12px 0}
-.checkrow{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding:8px 0;
-  border-bottom:1px solid rgba(255,255,255,.08);
+
+.tile{
+    background:#181818;
+    border:1px solid #333;
+    border-radius:14px;
+    padding:18px;
+    transition:0.2s;
 }
-.checkrow input{width:auto}
-.checkrow.done span{text-decoration:line-through;color:var(--muted)}
-.inline-checks{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
-.inline-checks label{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:8px 10px;
-  margin:0;
-  border:1px solid var(--border);
-  border-radius:999px;
-  background:rgba(255,255,255,.06);
-  color:#fff;
+
+.tile:hover{
+    border-color:#c40000;
+    transform:translateY(-2px);
 }
-.inline-checks input{width:auto;margin:0}
-.output{
-  white-space:pre-wrap;
-  background:#06111f;
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:12px;
-  min-height:50px;
+
+.tile h3{
+    margin-top:0;
+    color:#fff;
 }
-.notice{
-  display:none;
-  position:fixed;
-  left:50%;
-  top:90px;
-  transform:translateX(-50%);
-  background:#071527;
-  border:1px solid var(--good);
-  color:#fff;
-  padding:12px 16px;
-  border-radius:12px;
-  z-index:100;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+.tile p{
+    color:#aaa;
+    font-size:14px;
+    min-height:40px;
 }
-.notice.show{display:block}
-.footer-note{text-align:center;color:var(--muted);font-size:12px;padding:20px}
-@media(max-width:760px){
-  .grid,.grid3{grid-template-columns:1fr}
-  header{position:relative}
-  .meal-title{align-items:flex-start;flex-direction:column}
+
+.tile a{
+    display:inline-block;
+    margin-top:12px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid #c40000;
+    text-decoration:none;
+    color:#fff;
+    font-size:14px;
+}
+
+.tile a:hover{
+    background:#c40000;
+}
+
+.footer{
+    text-align:center;
+    margin-top:40px;
+    color:#666;
+    font-size:12px;
+}
+
+@media(max-width:700px){
+    .topbar{
+        flex-direction:column;
+    }
+
+    button{
+        width:100%;
+    }
 }
 </style>
 </head>
+
 <body>
-<header>
-  <h1>Local Meal Planner</h1>
-  <p>Meals are saved only on this device/browser when you press Save.</p>
-</header>
 
-<div id="notice" class="notice">Saved</div>
+<div class="page">
 
-<main>
-  <section>
-    <h2>Save / Reset</h2>
-    <p class="small">Use <b>Save to this device</b> when you want to lock in your changes. Closing the page before saving may lose unsaved changes.</p>
-    <div class="btnrow">
-      <button class="good" onclick="saveData()">Save to this device</button>
-      <button class="secondary" onclick="loadData()">Reload saved data</button>
-      <button class="danger" onclick="clearData()">Clear saved data</button>
+    <section class="hero">
+        <h1>Module Launcher</h1>
+        <p>Dynamic launcher for BW Playbook modules and tools.</p>
+    </section>
+
+    <div class="topbar">
+        <input type="text" id="search" placeholder="Search modules...">
+        <button onclick="loadModules()">Refresh Directory</button>
     </div>
-  </section>
 
-  <section>
-    <h2>Cooks</h2>
-    <div class="grid">
-      <div>
-        <label for="cookName">Add cook</label>
-        <input id="cookName" placeholder="e.g. Mum, Dad, Hayden, Kids" />
-        <button onclick="addCook()">Add Cook</button>
-      </div>
-      <div>
-        <label>Current cooks</label>
-        <div id="cookList" class="output"></div>
-      </div>
+    <div class="grid" id="moduleGrid"></div>
+
+    <div class="footer">
+        Designed and built by H. Fitzgerald
     </div>
-  </section>
 
-  <section>
-    <h2>Add / Edit Meal</h2>
-    <div class="grid">
-      <div>
-        <input type="hidden" id="editingMealId" />
-        <label for="mealName">Meal name</label>
-        <input id="mealName" placeholder="e.g. Spaghetti Bolognese" />
-
-        <label for="mealIngredients">Ingredients, one per line</label>
-        <textarea id="mealIngredients" placeholder="mince&#10;pasta&#10;tomato paste&#10;onion"></textarea>
-
-        <label>Who can cook this?</label>
-        <div id="cookChecks" class="inline-checks"></div>
-
-        <div class="inline-checks" style="margin-top:12px;">
-          <label><input id="useInPlan" type="checkbox" checked /> Use in meal plan</label>
-        </div>
-
-        <div class="btnrow">
-          <button onclick="addOrUpdateMeal()">Save Meal to Library</button>
-          <button class="secondary" onclick="resetMealForm()">Clear Form</button>
-        </div>
-      </div>
-
-      <div>
-        <h3>Meal Library</h3>
-        <div id="mealList"></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Generate Meal Plan</h2>
-    <div class="grid3">
-      <div>
-        <label for="mealCount">Number of meals needed</label>
-        <input id="mealCount" type="number" min="1" value="7" />
-      </div>
-      <div>
-        <label for="balanceMode">Cook allocation</label>
-        <select id="balanceMode">
-          <option value="balanced">Balance cooks evenly where possible</option>
-          <option value="random">Random eligible cook</option>
-          <option value="none">Do not allocate cooks</option>
-        </select>
-      </div>
-      <div>
-        <label for="avoidSameCook">Rule</label>
-        <select id="avoidSameCook">
-          <option value="yes">Avoid same cook back-to-back where possible</option>
-          <option value="no">No back-to-back rule</option>
-        </select>
-      </div>
-    </div>
-    <div class="btnrow">
-      <button onclick="generatePlan()">Generate Random Plan</button>
-      <button class="secondary" onclick="copyPlan()">Copy Plan</button>
-    </div>
-    <div class="hr"></div>
-    <h3>Meal Plan</h3>
-    <div id="planOutput" class="output"></div>
-  </section>
-
-  <section>
-    <h2>Shopping List</h2>
-    <p class="small">Generated from the current meal plan. Click ingredients you already have.</p>
-    <div class="btnrow">
-      <button onclick="buildShoppingList()">Build Shopping List from Plan</button>
-      <button class="secondary" onclick="copyShoppingList()">Copy Remaining Shopping List</button>
-      <button class="secondary" onclick="resetShoppingChecks()">Untick All</button>
-    </div>
-    <div class="hr"></div>
-    <div id="shoppingList"></div>
-  </section>
-
-  <div class="footer-note">Local-only tool. No account, server, or syncing.</div>
-</main>
+</div>
 
 <script>
-const STORAGE_KEY = "localMealPlanner.v1";
-let state = {
-  cooks: [],
-  meals: [],
-  currentPlan: [],
-  shoppingChecked: {}
-};
 
-function uid(){
-  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+let modules = [];
+
+async function loadModules() {
+
+    const response = await fetch('manifest.json?t=' + new Date().getTime());
+    modules = await response.json();
+
+    renderModules(modules);
 }
 
-function showNotice(msg){
-  const n = document.getElementById("notice");
-  n.textContent = msg;
-  n.classList.add("show");
-  setTimeout(()=>n.classList.remove("show"), 1800);
-}
+function renderModules(list){
 
-function saveData(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  showNotice("Saved to this device");
-}
+    const grid = document.getElementById('moduleGrid');
+    grid.innerHTML = '';
 
-function loadData(){
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if(raw){
-    try{ state = JSON.parse(raw); }
-    catch(e){ showNotice("Could not load saved data"); }
-  }
-  renderAll();
-  showNotice(raw ? "Loaded saved data" : "No saved data found");
-}
+    list.forEach(module => {
 
-function clearData(){
-  if(!confirm("Clear all saved meals, cooks, plans and shopping ticks from this device?")) return;
-  localStorage.removeItem(STORAGE_KEY);
-  state = { cooks: [], meals: [], currentPlan: [], shoppingChecked: {} };
-  renderAll();
-  showNotice("Saved data cleared");
-}
+        const tile = document.createElement('div');
+        tile.className = 'tile';
 
-function addCook(){
-  const input = document.getElementById("cookName");
-  const name = input.value.trim();
-  if(!name) return;
-  if(state.cooks.some(c => c.toLowerCase() === name.toLowerCase())){
-    showNotice("Cook already exists");
-    return;
-  }
-  state.cooks.push(name);
-  input.value = "";
-  renderAll();
-}
+        tile.innerHTML = `
+            <h3>${module.title}</h3>
+            <p>${module.description || 'No description provided.'}</p>
+            <a href="${module.file}">Open Module</a>
+        `;
 
-function removeCook(name){
-  if(!confirm("Remove cook: " + name + "?")) return;
-  state.cooks = state.cooks.filter(c => c !== name);
-  state.meals.forEach(m => m.cooks = (m.cooks || []).filter(c => c !== name));
-  state.currentPlan.forEach(p => { if(p.cook === name) p.cook = ""; });
-  renderAll();
-}
+        grid.appendChild(tile);
 
-function renderCooks(){
-  const el = document.getElementById("cookList");
-  if(!state.cooks.length){
-    el.innerHTML = "<span class='small'>No cooks added yet.</span>";
-  } else {
-    el.innerHTML = state.cooks.map(c => 
-      `<span class="tag">${escapeHtml(c)} <button class="secondary" style="padding:2px 6px;margin:0 0 0 5px;" onclick="removeCook('${escapeAttr(c)}')">x</button></span>`
-    ).join("");
-  }
-
-  const checks = document.getElementById("cookChecks");
-  if(!state.cooks.length){
-    checks.innerHTML = "<span class='small'>Add cooks above first, or leave blank.</span>";
-  } else {
-    checks.innerHTML = state.cooks.map(c =>
-      `<label><input type="checkbox" value="${escapeAttr(c)}" /> ${escapeHtml(c)}</label>`
-    ).join("");
-  }
-}
-
-function addOrUpdateMeal(){
-  const id = document.getElementById("editingMealId").value;
-  const name = document.getElementById("mealName").value.trim();
-  const ingredients = document.getElementById("mealIngredients").value
-    .split("\n").map(x => x.trim()).filter(Boolean);
-  const cooks = Array.from(document.querySelectorAll("#cookChecks input:checked")).map(x => x.value);
-  const useInPlan = document.getElementById("useInPlan").checked;
-
-  if(!name){ showNotice("Meal name required"); return; }
-  if(!ingredients.length){ showNotice("Add at least one ingredient"); return; }
-
-  if(id){
-    const meal = state.meals.find(m => m.id === id);
-    if(meal){
-      meal.name = name;
-      meal.ingredients = ingredients;
-      meal.cooks = cooks;
-      meal.useInPlan = useInPlan;
-    }
-  } else {
-    state.meals.push({ id: uid(), name, ingredients, cooks, useInPlan });
-  }
-  resetMealForm();
-  renderAll();
-  showNotice("Meal saved to library");
-}
-
-function editMeal(id){
-  const meal = state.meals.find(m => m.id === id);
-  if(!meal) return;
-  document.getElementById("editingMealId").value = meal.id;
-  document.getElementById("mealName").value = meal.name;
-  document.getElementById("mealIngredients").value = meal.ingredients.join("\n");
-  document.getElementById("useInPlan").checked = !!meal.useInPlan;
-  renderCooks();
-  document.querySelectorAll("#cookChecks input").forEach(cb => {
-    cb.checked = (meal.cooks || []).includes(cb.value);
-  });
-  window.scrollTo({top: document.querySelector("section:nth-of-type(3)").offsetTop - 20, behavior:"smooth"});
-}
-
-function deleteMeal(id){
-  const meal = state.meals.find(m => m.id === id);
-  if(!meal) return;
-  if(!confirm("Delete meal: " + meal.name + "?")) return;
-  state.meals = state.meals.filter(m => m.id !== id);
-  state.currentPlan = state.currentPlan.filter(p => p.mealId !== id);
-  renderAll();
-}
-
-function toggleMealUse(id){
-  const meal = state.meals.find(m => m.id === id);
-  if(meal){ meal.useInPlan = !meal.useInPlan; renderAll(); }
-}
-
-function resetMealForm(){
-  document.getElementById("editingMealId").value = "";
-  document.getElementById("mealName").value = "";
-  document.getElementById("mealIngredients").value = "";
-  document.getElementById("useInPlan").checked = true;
-  renderCooks();
-}
-
-function renderMeals(){
-  const el = document.getElementById("mealList");
-  if(!state.meals.length){
-    el.innerHTML = "<p class='small'>No meals added yet.</p>";
-    return;
-  }
-  el.innerHTML = state.meals.map(m => `
-    <div class="card">
-      <div class="meal-title">
-        <h3>${escapeHtml(m.name)}</h3>
-        <span class="badge ${m.useInPlan ? 'good' : 'off'}">${m.useInPlan ? 'In plan pool' : 'Not used'}</span>
-      </div>
-      <div class="small"><b>Ingredients:</b> ${m.ingredients.map(escapeHtml).join(", ")}</div>
-      <div class="small" style="margin-top:6px;"><b>Cooks:</b> ${(m.cooks && m.cooks.length) ? m.cooks.map(escapeHtml).join(", ") : "Any / not allocated"}</div>
-      <div class="btnrow">
-        <button class="secondary" onclick="editMeal('${m.id}')">Edit</button>
-        <button class="secondary" onclick="toggleMealUse('${m.id}')">${m.useInPlan ? 'Remove from plan' : 'Use in plan'}</button>
-        <button class="danger" onclick="deleteMeal('${m.id}')">Delete</button>
-      </div>
-    </div>
-  `).join("");
-}
-
-function generatePlan(){
-  const count = Math.max(1, parseInt(document.getElementById("mealCount").value || "1", 10));
-  const pool = state.meals.filter(m => m.useInPlan);
-  if(pool.length < count){
-    showNotice("Not enough meals marked for use");
-  }
-  const shuffled = shuffle([...pool]).slice(0, Math.min(count, pool.length));
-  const mode = document.getElementById("balanceMode").value;
-  const avoidBack = document.getElementById("avoidSameCook").value === "yes";
-  const cookCounts = {};
-  state.cooks.forEach(c => cookCounts[c] = 0);
-
-  let lastCook = "";
-  state.currentPlan = shuffled.map((meal, idx) => {
-    let cook = "";
-    if(mode !== "none"){
-      const eligible = (meal.cooks && meal.cooks.length) ? meal.cooks : state.cooks;
-      if(eligible.length){
-        let options = [...eligible];
-        if(avoidBack && options.length > 1){
-          const filtered = options.filter(c => c !== lastCook);
-          if(filtered.length) options = filtered;
-        }
-        if(mode === "balanced"){
-          options.sort((a,b) => (cookCounts[a] || 0) - (cookCounts[b] || 0));
-          const lowest = cookCounts[options[0]] || 0;
-          options = options.filter(c => (cookCounts[c] || 0) === lowest);
-        }
-        cook = options[Math.floor(Math.random() * options.length)];
-        cookCounts[cook] = (cookCounts[cook] || 0) + 1;
-        lastCook = cook;
-      }
-    }
-    return { mealId: meal.id, mealName: meal.name, cook };
-  });
-
-  state.shoppingChecked = {};
-  renderPlan();
-  buildShoppingList();
-}
-
-function renderPlan(){
-  const el = document.getElementById("planOutput");
-  if(!state.currentPlan.length){
-    el.textContent = "No meal plan generated yet.";
-    return;
-  }
-  el.textContent = state.currentPlan.map((p,i) => 
-    `${i+1}. ${p.mealName}${p.cook ? " — " + p.cook : ""}`
-  ).join("\n");
-}
-
-function buildShoppingList(){
-  const ingredients = {};
-  state.currentPlan.forEach(p => {
-    const meal = state.meals.find(m => m.id === p.mealId);
-    if(!meal) return;
-    meal.ingredients.forEach(item => {
-      const key = normaliseIngredient(item);
-      if(!ingredients[key]) ingredients[key] = { label:item, count:0, meals:[] };
-      ingredients[key].count += 1;
-      ingredients[key].meals.push(meal.name);
     });
-  });
-
-  const el = document.getElementById("shoppingList");
-  const list = Object.keys(ingredients).sort((a,b)=>ingredients[a].label.localeCompare(ingredients[b].label));
-  if(!list.length){
-    el.innerHTML = "<p class='small'>No shopping list yet. Generate a meal plan first.</p>";
-    return;
-  }
-  el.innerHTML = list.map(key => {
-    const item = ingredients[key];
-    const checked = !!state.shoppingChecked[key];
-    const label = item.count > 1 ? `${item.label} × ${item.count}` : item.label;
-    return `
-      <label class="checkrow ${checked ? 'done' : ''}">
-        <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleShopping('${escapeAttr(key)}', this.checked)" />
-        <span>${escapeHtml(label)}</span>
-      </label>
-    `;
-  }).join("");
 }
 
-function toggleShopping(key, checked){
-  state.shoppingChecked[key] = checked;
-  buildShoppingList();
-}
+document.getElementById('search').addEventListener('input', function(){
 
-function resetShoppingChecks(){
-  state.shoppingChecked = {};
-  buildShoppingList();
-}
+    const term = this.value.toLowerCase();
 
-function copyPlan(){
-  const text = document.getElementById("planOutput").textContent.trim();
-  if(!text) return;
-  navigator.clipboard.writeText(text).then(()=>showNotice("Meal plan copied"));
-}
+    const filtered = modules.filter(module =>
+        module.title.toLowerCase().includes(term)
+    );
 
-function copyShoppingList(){
-  const rows = Array.from(document.querySelectorAll("#shoppingList .checkrow"));
-  const remaining = rows.filter(r => !r.querySelector("input").checked).map(r => "- " + r.querySelector("span").textContent);
-  const text = remaining.length ? remaining.join("\n") : "All ingredients marked as already available.";
-  navigator.clipboard.writeText(text).then(()=>showNotice("Shopping list copied"));
-}
+    renderModules(filtered);
 
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
-  }
-  return arr;
-}
-
-function normaliseIngredient(s){
-  return s.toLowerCase().replace(/\s+/g," ").trim();
-}
-
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-function escapeAttr(str){
-  return escapeHtml(str).replace(/`/g,'&#96;');
-}
-
-function renderAll(){
-  renderCooks();
-  renderMeals();
-  renderPlan();
-  buildShoppingList();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if(raw){
-    try{ state = JSON.parse(raw); } catch(e){}
-  }
-  renderAll();
 });
+
+loadModules();
+
 </script>
+
 </body>
 </html>
