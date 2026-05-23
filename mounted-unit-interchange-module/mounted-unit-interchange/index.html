@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mounted Unit Interchange</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page">
+  <header class="hero">
+    <h1>Mounted Unit Interchange</h1>
+    <p>Search any listed part number and convert it to available direct interchange alternatives from the source table.</p>
+  </header>
+
+  <section class="controls">
+    <div>
+      <label for="searchInput">Search Part Number</label>
+      <input id="searchInput" placeholder="Example: P2B-SC-100, NP-16, UCP205-16" autocomplete="off" />
+    </div>
+    <div>
+      <label for="brandFilter">Brand Filter</label>
+      <select id="brandFilter">
+        <option value="">All brands</option>
+      </select>
+    </div>
+    <div>
+      <label for="categoryFilter">Unit Type</label>
+      <select id="categoryFilter">
+        <option value="">All unit types</option>
+      </select>
+    </div>
+    <button id="clearBtn">Clear</button>
+  </section>
+
+  <section class="info-strip">
+    <span id="countInfo">Loading interchange rules...</span>
+    <span class="confidence">Confidence: Direct table match where part appears in same source row.</span>
+  </section>
+
+  <main id="results" class="results"></main>
+
+  <footer>Designed and built by H. Fitzgerald</footer>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
